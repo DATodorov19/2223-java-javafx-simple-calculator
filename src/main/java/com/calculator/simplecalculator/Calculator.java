@@ -10,8 +10,12 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Calculator extends Application {
+
+    int operation;
+    double valueOne, valueTwo;
     TextField textField;
     @Override
     public void start(Stage stage) throws IOException {
@@ -160,7 +164,24 @@ public class Calculator extends Application {
                 "-fx-pref-height: 50px; " +
                 "-fx-background-radius: 10; ");
 
+        Button buttonOperationBackspace = new Button("⌫");
+        buttonOperationBackspace.setStyle("-fx-background-color: #2ca7db;" +
+                "-fx-text-fill: #161717; " +
+                "-fx-font-size: 18px; " +
+                "-fx-pref-width: 50px; " +
+                "-fx-pref-height: 50px; " +
+                "-fx-background-radius: 10; ");
+
+        Button buttonOperationPoint = new Button(".");
+        buttonOperationPoint.setStyle("-fx-background-color: #2ca7db;" +
+                "-fx-text-fill: #161717; " +
+                "-fx-font-size: 18px; " +
+                "-fx-pref-width: 50px; " +
+                "-fx-pref-height: 50px; " +
+                "-fx-background-radius: 10; ");
+
         // Row 2
+        gridPane.add(buttonOperationBackspace, 1, 1);
         gridPane.add(buttonOperationClear, 2, 1);
         gridPane.add(buttonOperationDivision, 3, 1);
 
@@ -184,25 +205,28 @@ public class Calculator extends Application {
 
         // Row 6
         gridPane.add(buttonNumberZero, 1, 5);
+        gridPane.add(buttonOperationPoint,2, 5);
         gridPane.add(buttonOperationEqual, 3, 5);
 
         // Events
-        buttonNumberZero.setOnAction(event -> handleButtonPress("0"));
-        buttonNumberOne.setOnAction(event -> handleButtonPress("1"));
-        buttonNumberTwo.setOnAction(event -> handleButtonPress("2"));
-        buttonNumberThree.setOnAction(event -> handleButtonPress("3"));
-        buttonNumberFour.setOnAction(event -> handleButtonPress("4"));
-        buttonNumberFive.setOnAction(event -> handleButtonPress("5"));
-        buttonNumberSix.setOnAction(event -> handleButtonPress("6"));
-        buttonNumberSeven.setOnAction(event -> handleButtonPress("7"));
-        buttonNumberEight.setOnAction(event -> handleButtonPress("8"));
-        buttonNumberNine.setOnAction(event -> handleButtonPress("9"));
-        buttonOperationAddition.setOnAction(event -> handleButtonPress("+"));
-        buttonOperationSubtraction.setOnAction(event -> handleButtonPress("-"));
-        buttonOperationMultiplication.setOnAction(event -> handleButtonPress("*"));
-        buttonOperationDivision.setOnAction(event -> handleButtonPress("/"));
-        buttonOperationEqual.setOnAction(event -> handleButtonPress("="));
-        buttonOperationClear.setOnAction(event -> handleButtonPress("C"));
+        buttonNumberZero.setOnAction(event -> handleButtonPressNumber("0"));
+        buttonNumberOne.setOnAction(event -> handleButtonPressNumber("1"));
+        buttonNumberTwo.setOnAction(event -> handleButtonPressNumber("2"));
+        buttonNumberThree.setOnAction(event -> handleButtonPressNumber("3"));
+        buttonNumberFour.setOnAction(event -> handleButtonPressNumber("4"));
+        buttonNumberFive.setOnAction(event -> handleButtonPressNumber("5"));
+        buttonNumberSix.setOnAction(event -> handleButtonPressNumber("6"));
+        buttonNumberSeven.setOnAction(event -> handleButtonPressNumber("7"));
+        buttonNumberEight.setOnAction(event -> handleButtonPressNumber("8"));
+        buttonNumberNine.setOnAction(event -> handleButtonPressNumber("9"));
+        buttonOperationAddition.setOnAction(event -> handleButtonPressOperationAddition());
+        buttonOperationSubtraction.setOnAction(event -> handleButtonPressOperationSubtraction());
+        buttonOperationMultiplication.setOnAction(event -> handleButtonPressOperationMultiplication());
+        buttonOperationDivision.setOnAction(event -> handleButtonPressOperationDivision());
+        buttonOperationEqual.setOnAction(event -> handleButtonPressEquals());
+        buttonOperationPoint.setOnAction(event -> handleButtonPressPoint());
+        buttonOperationClear.setOnAction(event -> handleButtonPressClear());
+        buttonOperationBackspace.setOnAction(event -> handleButtonPressBackspace());
 
         Scene scene = new Scene(gridPane);
         stage.setScene(scene);
@@ -211,6 +235,112 @@ public class Calculator extends Application {
 
     private void handleButtonPress(String buttonValue) {
         textField.setText(textField.getText() + buttonValue);
+    }
+
+    private void handleButtonPressClear(){
+        textField.setText("0");
+        valueOne = 0;
+        valueTwo = 0;
+        operation = 0;
+    }
+
+    private void handleButtonPressBackspace(){
+        String screen = textField.getText();
+        char[] screenArray = screen.toCharArray();
+        String result = "";
+
+        for(int i = 0; i < screenArray.length -1; i++){
+            result += String.valueOf(screenArray[i]);
+        }
+
+        textField.setText(result);
+    }
+
+    private void handleButtonPressOperationAddition(){
+        if(valueOne == 0)
+        {
+            valueOne = Double.parseDouble(textField.getText());
+            operation = 1;
+            textField.setText("0");
+        }
+    }
+
+    private void handleButtonPressOperationSubtraction(){
+        if(valueOne == 0)
+        {
+            valueOne = Double.parseDouble(textField.getText());
+            operation = 2;
+            textField.setText("0");
+        }
+    }
+
+    private void handleButtonPressOperationMultiplication(){
+        if(valueOne == 0)
+        {
+            valueOne = Double.parseDouble(textField.getText());
+            operation = 3;
+            textField.setText("0");
+        }
+    }
+
+    private void handleButtonPressOperationDivision(){
+        if(valueOne == 0)
+        {
+            valueOne = Double.parseDouble(textField.getText());
+            operation = 4;
+            textField.setText("0");
+        }
+    }
+
+    private void handleButtonPressPoint(){
+        String screen = textField.getText();
+
+        if(!screen.contains(".")){
+            textField.setText(textField.getText() + ".");
+        }
+    }
+
+    private void handleButtonPressNumber(String buttonValue){
+        if(Objects.equals(textField.getText(), "0") && !Objects.equals(buttonValue, "0")){
+            textField.setText(buttonValue);
+        }else if(!Objects.equals(textField.getText(), "0")){
+            textField.setText(textField.getText() + buttonValue);
+        }
+    }
+
+    private void handleButtonPressEquals(){
+
+        double result;
+        switch(operation){
+            case 1:{
+                valueTwo = Double.parseDouble(textField.getText());
+                result = valueOne + valueTwo;
+                textField.setText(String.valueOf(result));
+                break;
+            }
+            case 2:{
+                valueTwo = Double.parseDouble(textField.getText());
+                result = valueOne - valueTwo;
+                textField.setText(String.valueOf(result));
+                break;
+            }
+            case 3: {
+                valueTwo = Double.parseDouble(textField.getText());
+                result = valueOne * valueTwo;
+                textField.setText(String.valueOf(result));
+                break;
+
+            }
+            case 4:{
+                valueTwo = Double.parseDouble(textField.getText());
+                result = valueOne / valueTwo;
+                textField.setText(String.valueOf(result));
+                break;
+            }
+            default:{
+                break;
+            }
+        }
     }
 
     public static void main(String[] args) {
